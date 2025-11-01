@@ -1,1 +1,142 @@
-# Configuration file for License Plate Blurring Project
+# ==========================
+# License Plate Blurring Config
+# ==========================
+
+# --- Model & Source ---
+detection_model: "models/best.pt"      # Path to trained YOLO model (.pt)
+device: "cpu"                             # "0" or "cuda" for GPU, "cpu" for CPU
+video_source: "data/demo_5.mp4"             # Path to video or 0 for webcam
+
+confidence: 0.25
+iou: 0.45
+max_det: 100
+
+# --- Blur Settings ---
+blur:
+  type: "mosaic"                          # "mosaic" or "gaussian"
+  kernel: 25                              # For gaussian blur
+  sigma: 0
+  pixel_size: 20                          # For mosaic blur
+
+privacy_zones: []                         # e.g., [[0,0,200,200]] to skip blur in a region
+
+# --- Output & Logging ---
+save_video: true
+save_path: "outputs/annotated.mp4"
+save_fps: 30
+output_scale: 0.5                         # Resize output video (e.g., 0.5 for half size)
+log_json: true
+log_path: "outputs/detections.json"
+show_window: false                        # Set true for live preview
+
+
+
+# --- Capture Output Folders ---
+captures:
+  plates_dir: "outputs/captures/plates"
+  vehicles_dir: "outputs/captures/vehicles"
+  annotated_dir: "outputs/captures/annotated"
+
+# --- Export Paths ---
+export:
+  csv_path: "outputs/plate_events.csv"
+  json_path: "outputs/plate_events.json"
+
+# --- Vehicle Crop / Pad Ratio ---
+vehicle_crop:
+  pad_ratio: 2.5                          # Expand area around plate for vehicle crop
+
+# --- Tracker Settings ---
+tracker:
+  enabled: true
+  type: "bytetrack"                       # (placeholder, using simple IoU tracker)
+  debounce_seconds: 3.0                   # Time before same plate can log again
+  min_confidence: 0.2
+  max_age: 45
+  min_iou: 0.25
+
+# --- Overlay / UI ---
+overlay:
+  show_time: true
+  font_scale: 0.9
+
+# --- Blur Mode ---
+blur_mode: "plate"                        # "plate" = blur only license plates
+                                          # "vehicle" = blur full vehicles
+
+blur_vehicle_around_plate: true           # Also blur vehicle area around the plate
+
+# --- Analytics Output ---
+analytics:
+  enabled: true
+  report_json: "outputs/analytics_summary.json"
+
+# --- Optional Extra Detectors (future use) ---
+secondary_detectors:
+  face_model: ""
+  person_model: ""
+
+roi:
+  enabled: false
+  polygon: []
+
+auto_model_switch:
+  enabled: false
+  low_conf_threshold: 0.40
+  heavy_model: ""
+
+#virtual_line:
+#  enabled: true
+#  points: [[100, 600], [1200, 600]]   # (x1, y1) – (x2, y2)
+#  direction: "vertical"               # or "horizontal"
+
+# Slow motion (0.5 = half speed, 0.25 = quarter)
+output_speed: 0.5
+
+# Virtual line
+virtual_line:
+  enabled: true
+  points: [[700, 1540], [3665, 1540]]   # adjust to your road
+  normalized: false
+  in_label: "Inbound"
+  out_label: "Outbound"
+  color_bgr: [0, 0, 255]      # RED
+  thickness: 5
+  deadband: 3.0
+  force_direction: "inbound"
+  font_scale: 3.5
+
+# Optional secondary COCO detector to reduce misses (recommended)
+secondary_detector:
+  model: "yolov8n.pt"     # or another COCO checkpoint available locally
+  confidence: 0.25
+  iou: 0.5
+  imgsz: 960
+  vehicle_class_ids: [2, 3, 5, 7]   # car, motorcycle, bus, truck
+
+# Plate search inside each tracked vehicle (not a fixed place)
+plate_in_vehicle:
+  enabled: true
+  expand_ratio: 1.10          # grow the vehicle crop a bit before LP detect
+  freeze_conf: 0.20           # keep first good read
+  freeze_on_first: true
+
+# OCR and quality
+ocr:
+  enabled: true
+  engine: rapidocr
+  languages: ["en"]
+  min_text_len: 4
+  min_plate_chars: 5          # reject too-short junk
+  uppercase: true
+  alnum_only: true
+  quality_threshold: 120.0    # Laplacian variance — lower => try enhance
+
+# Inference sizes (helps with small plates)
+predict_imgsz: 960
+
+# How many recent plates to display top-right
+recent_list_size: 6
+
+recent_push_policy: any
+panel_mode: inbound_only
