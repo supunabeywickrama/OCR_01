@@ -18,8 +18,7 @@ This project is built to work **robustly on any traffic video**, even when:
   </a>
 </p>
 
-> Replace `YOUR_DEMO_VIDEO_ID` with your demo link  
-> (YouTube / Google Drive / GitHub video supported)
+
 
 ---
 
